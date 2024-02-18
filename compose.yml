@@ -32,14 +32,16 @@ services:
           ipv4_address: 192.168.0.2
 
     jenkins:
-      image: jenkins/jenkins:lts
-      ports:
-        - "8080:8080"
-        - "50000:50000"
-      volumes:
-        - jenkins_home:/var/jenkins_home
-      networks:
-        - my_network
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - my_network
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 networks:
   my_network:
