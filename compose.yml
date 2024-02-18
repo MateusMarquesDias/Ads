@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+    web:
+      image: 127.0.0.1:5000/stackdemo
+      deploy:
+        replicas: 5
+      build: .
+      ports:
+        - "8000:8000"
+      networks:
+        - my_network
+        
+    redis:
+      image: redis:alpine
+      networks:
+        - my_network
+      
+    mysql:
+      image: mysql
+      deploy:
+        replicas: 1
+      environment:
+        MYSQL_ROOT_PASSWORD: ""
+        MYSQL_DATABASE: "localhost"
+        MYSQL_PASSWORD: ""
+        MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      volumes:
+        - ./mysql:/var/lib/mysql
+      networks:
+        my_network:
+          ipv4_address: 192.168.0.2
+
+    jenkins:
+      image: jenkins/jenkins:lts
+      ports:
+        - "8080:8080"
+        - "50000:50000"
+      volumes:
+        - jenkins_home:/var/jenkins_home
+      networks:
+        - my_network
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
